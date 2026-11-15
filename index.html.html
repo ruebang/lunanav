@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LunaNav | Lunar South Pole Mission Planner</title>
+<style>
+:root{--bg:#080d18;--panel:#111a2b;--panel2:#172338;--line:#263650;--text:#edf3ff;--muted:#9aabc4;--cyan:#67d9ee;--gold:#ffc76a;--green:#72dfb0;--red:#ff8d8d}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% -15%,#20385c 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+header{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,56px);position:sticky;top:0;background:#080d18eF;backdrop-filter:blur(12px);z-index:5}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.08em}.logo{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff5d6,#c7d3e4 35%,#596d88 72%,#28354a);box-shadow:0 0 25px #b7d5ff55}
+.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:.18em;font-weight:600}.topright{color:var(--muted);font-size:12px;display:flex;gap:18px;align-items:center}.live{color:var(--green);border:1px solid #367e69;border-radius:99px;padding:5px 10px}
+main{max-width:1440px;margin:auto;padding:30px clamp(16px,4vw,56px) 60px}.eyebrow{color:var(--cyan);font-size:11px;letter-spacing:.2em;font-weight:800;text-transform:uppercase}
+h1{font-size:clamp(30px,4vw,48px);line-height:1.08;margin:9px 0 10px;letter-spacing:-.04em}.intro{color:var(--muted);max-width:760px;margin:0 0 26px}
+.grid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:18px}.panel{background:linear-gradient(145deg,#152137,#0f1828);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 12px 35px #0002}.panel h2{font-size:14px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 16px}.field{margin:0 0 14px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field select,.field input{width:100%;border:1px solid #344762;background:#0a1322;color:var(--text);padding:11px 12px;border-radius:9px;font:inherit;outline:none}.field select:focus,.field input:focus{border-color:var(--cyan)}
+.btn{border:0;border-radius:9px;padding:11px 14px;background:linear-gradient(100deg,#39bdd7,#7a9dff);color:#07121d;font-weight:800;cursor:pointer;width:100%;font:inherit}.btn.secondary{background:#1d2c43;color:var(--text);border:1px solid #3a506d}.hint{font-size:11px;color:var(--muted);margin-top:12px}
+.content{display:grid;gap:18px}.hero{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(260px,.7fr);gap:18px}.visual{min-height:345px;position:relative;overflow:hidden;background:radial-gradient(ellipse at 48% 110%,#9ca9b7 0,#65768a 22%,#2a3b55 44%,#111c2e 70%);border-radius:13px;border:1px solid #31445f}
+.stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 12% 18%,#fff 98%,transparent),radial-gradient(1px 1px at 76% 23%,#fff 98%,transparent),radial-gradient(1px 1px at 88% 55%,#b7d7ff 98%,transparent),radial-gradient(1px 1px at 31% 40%,#fff 98%,transparent),radial-gradient(1px 1px at 62% 12%,#fff 98%,transparent),radial-gradient(1px 1px at 18% 65%,#fff 98%,transparent);opacity:.7}
+.horizon{position:absolute;left:-8%;right:-8%;bottom:-25%;height:65%;border-radius:50% 50% 0 0;background:radial-gradient(ellipse at 50% 0%,#aeb9c5,#75869b 30%,#45556b 68%,#253349);box-shadow:0 -18px 55px #b5c7db22}
+.crater{position:absolute;border:2px solid #34445a;border-radius:50%;background:radial-gradient(ellipse at 50% 20%,#66778b,#34445a 70%);box-shadow:inset 0 9px 15px #d7e1ef25}.c1{width:180px;height:58px;left:12%;bottom:18%}.c2{width:110px;height:38px;right:13%;bottom:29%}.c3{width:65px;height:24px;left:54%;bottom:9%}
+.sun{position:absolute;width:36px;height:36px;border-radius:50%;background:#ffd47d;box-shadow:0 0 20px 8px #ffc76a88,0 0 65px 20px #ffc76a33;top:34%;left:62%}
+.earth{position:absolute;width:27px;height:27px;border-radius:50%;top:18%;left:27%;background:radial-gradient(circle at 35% 30%,#d9f8ff,#3b9bd4 45%,#164d85 75%);box-shadow:0 0 18px #5acbff66}
+.labeltag{position:absolute;background:#0b1422cc;border:1px solid #48607c;border-radius:7px;padding:5px 8px;font-size:11px;color:#e9f3ff}.sunlabel{top:45%;left:68%}.earthlabel{top:12%;left:33%}.visualcaption{position:absolute;left:15px;bottom:12px;color:#dce8f7;font-size:11px;background:#0a1424b8;padding:7px 9px;border-radius:7px}
+.sideinfo{display:grid;gap:12px}.metric{background:#0d1727;border:1px solid #293b55;border-radius:12px;padding:14px}.metric .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.1em}.metric .v{font-size:27px;font-weight:800;margin:3px 0}.metric .sub{font-size:11px;color:var(--muted)}.gold{color:var(--gold)}.blue{color:var(--cyan)}.green{color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#0d1727;border:1px solid #293b55;border-radius:12px;padding:14px}.stat span{display:block;color:var(--muted);font-size:11px}.stat strong{display:block;font-size:21px;margin-top:5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}.barrow{display:grid;grid-template-columns:100px 1fr 42px;gap:10px;align-items:center;margin:13px 0;font-size:12px}.track{height:8px;background:#26364c;border-radius:20px;overflow:hidden}.fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#39b9d3,#72dfb0)}.fill.goldfill{background:linear-gradient(90deg,#d99a3f,#ffdb83)}
+table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;color:var(--muted);font-weight:600;padding:10px 8px;border-bottom:1px solid var(--line)}td{padding:12px 8px;border-bottom:1px solid #223148}tr:last-child td{border:0}.selected{color:var(--cyan);font-weight:700}.tag{font-size:10px;padding:4px 7px;border-radius:99px;background:#20394a;color:#8ce5ef}
+.timeline{margin-top:14px}.timeline input{width:100%;accent-color:var(--cyan)}.ticks{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}
+.note{border-left:3px solid var(--gold);padding:10px 13px;background:#2b2419;border-radius:0 8px 8px 0;color:#e7d8bc;font-size:12px;margin-top:15px}
+footer{color:#7789a3;font-size:11px;text-align:center;margin-top:30px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.visual{min-height:300px}.sideinfo{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){header{height:62px}.topright .status{display:none}.stats{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.sideinfo{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:span 2}.brand{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo"></div><div>LUNANAV<small>LUNAR SOUTH POLE NAVIGATOR</small></div></div>
+  <div class="topright"><span class="status">MISSION PLANNING DEMONSTRATOR</span><span class="live">● DEMO MODE</span></div>
+</header>
+<main>
+  <div class="eyebrow">Lunar mission environment · interactive concept</div>
+  <h1>Find the right place.<br><span style="color:var(--cyan)">Choose the right time.</span></h1>
+  <p class="intro">Explore how sunlight, Earth visibility and local terrain can affect candidate landing sites near the lunar south pole. Change the site, date and time to explore this demonstration dashboard.</p>
+  <div class="grid">
+    <aside class="panel">
+      <h2>Mission parameters</h2>
+      <div class="field"><label for="site">Candidate landing site</label><select id="site"><option value="shackleton">Shackleton rim (illustrative)</option><option value="degerlache"> de Gerlache region (illustrative)</option><option value="haworth">Haworth rim region (illustrative)</option></select></div>
+      <div class="field"><label for="date">Mission date</label><input id="date" type="date" value="2026-11-15"></div>
+      <div class="field"><label for="time">Local mission time</label><input id="time" type="time" value="12:00"></div>
+      <div class="field"><label for="panelAngle">Solar panel tilt (demo)</label><select id="panelAngle"><option value="0">0° – horizontal</option><option value="30">30°</option><option value="60">60°</option><option value="90">90° – vertical</option></select></div>
+      <button class="btn" id="update">Update visualization</button>
+      <button class="btn secondary" id="compare" style="margin-top:9px">Compare candidate sites</button>
+      <p class="hint">The site labels and environmental readings are illustrative demo values, not mission-certified predictions.</p>
+    </aside>
+    <section class="content">
+      <div class="hero">
+        <div class="panel">
+          <h2>Local sky & terrain view <span class="tag">CONCEPT VIEW</span></h2>
+          <div class="visual" role="img" aria-label="Illustrative lunar horizon with Sun and Earth markers">
+            <div class="stars"></div><div class="earth" id="earthDot"></div><div class="labeltag earthlabel">EARTH</div>
+            <div class="sun" id="sunDot"></div><div class="labeltag sunlabel">SUN</div>
+            <div class="horizon"></div><div class="crater c1"></div><div class="crater c2"></div><div class="crater c3"></div>
+            <div class="visualcaption" id="visualCaption">Illustrative south-pole horizon · not to scale</div>
+          </div>
+        </div>
+        <div class="sideinfo">
+          <div class="metric"><div class="k">Sun elevation</div><div class="v gold" id="sunElev">5.2°</div><div class="sub">Illustrative local horizon angle</div></div>
+          <div class="metric"><div class="k">Earth elevation</div><div class="v blue" id="earthElev">12.4°</div><div class="sub">Illustrative apparent position</div></div>
+          <div class="metric"><div class="k">Direct line of sight</div><div class="v green" id="los">Possible*</div><div class="sub">Terrain check required</div></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>Sun azimuth</span><strong id="sunAz">84°</strong></div>
+        <div class="stat"><span>Earth azimuth</span><strong id="earthAz">210°</strong></div>
+        <div class="stat"><span>Illumination estimate</span><strong id="illum">68%</strong></div>
+        <div class="stat"><span>Visibility estimate</span><strong id="comm">82%</strong></div>
+      </div>
+      <div class="two">
+        <div class="panel">
+          <h2>Environmental overview</h2>
+          <div class="barrow"><span>Sunlight potential</span><div class="track"><div class="fill goldfill" id="sunBar" style="width:68%"></div></div><b id="sunPct">68%</b></div>
+          <div class="barrow"><span>Earth visibility</span><div class="track"><div class="fill" id="earthBar" style="width:82%"></div></div><b id="earthPct">82%</b></div>
+          <div class="barrow"><span>Terrain confidence</span><div class="track"><div class="fill" id="terrainBar" style="width:55%"></div></div><b id="terrainPct">55%</b></div>
+          <div class="note">These indicators are demonstration scores. A real assessment requires time-resolved ephemerides, a local terrain horizon model and validated elevation data.</div>
+        </div>
+        <div class="panel">
+          <h2>Time exploration</h2>
+          <p style="color:var(--muted);font-size:12px;margin-top:-7px">Move the slider to explore a conceptual local-day cycle.</p>
+          <div class="timeline"><input id="hour" type="range" min="0" max="23" value="12"><div class="ticks"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px"><span style="color:var(--muted);font-size:12px">Selected local time</span><strong id="hourLabel" style="font-size:22px">12:00</strong></div>
+          <p id="timeInsight" style="color:var(--muted);font-size:12px;margin-bottom:0">Illustrative conditions around local noon.</p>
+        </div>
+      </div>
+      <div class="panel" id="comparisonPanel">
+        <h2>Candidate site comparison</h2>
+        <p style="font-size:12px;color:var(--muted);margin-top:-7px">Illustrative sample data to demonstrate how planners could compare locations.</p>
+        <table><thead><tr><th>Candidate region</th><th>Sunlight score</th><th>Earth visibility</th><th>Terrain review</th></tr></thead>
+        <tbody id="compareRows">
+          <tr><td class="selected">Shackleton rim</td><td>68%</td><td>82%</td><td>Required</td></tr>
+          <tr><td>de Gerlache region</td><td>74%</td><td>65%</td><td>Required</td></tr>
+          <tr><td>Haworth rim region</td><td>59%</td><td>77%</td><td>Required</td></tr>
+        </tbody></table>
+      </div>
+    </section>
+  </div>
+  <footer>LUNANAV · Student prototype concept · Not for operational mission decisions · All displayed readings are illustrative</footer>
+</main>
+<script>
+const profiles={
+ shackleton:{sun:68,earth:82,terrain:55,sunElev:5.2,earthElev:12.4,sunAz:84,earthAz:210},
+ degerlache:{sun:74,earth:65,terrain:48,sunElev:7.1,earthElev:8.6,sunAz:102,earthAz:188},
+ haworth:{sun:59,earth:77,terrain:61,sunElev:3.8,earthElev:10.2,sunAz:72,earthAz:236}
+};
+const $=id=>document.getElementById(id);
+function update(){
+ const key=$('site').value,p=profiles[key],hour=Number($('hour').value),tilt=Number($('panelAngle').value);
+ const date=$('date').value||'Date not selected';
+ const phase=Math.cos((hour-12)*Math.PI/12);
+ const sunElev=(p.sunElev+phase*3.2);
+ const earthElev=p.earthElev+Math.sin((hour-5)*Math.PI/12)*1.8;
+ const illum=Math.max(0,Math.min(100,Math.round(p.sun+phase*12)));
+ const comm=Math.max(0,Math.min(100,Math.round(p.earth+Math.sin((hour-4)*Math.PI/12)*9)));
+ const los=earthElev>0 && p.terrain>35;
+ $('sunElev').textContent=sunElev.toFixed(1)+'°';$('earthElev').textContent=earthElev.toFixed(1)+'°';
+ $('sunAz').textContent=(p.sunAz+Math.round((hour-12)*2.1)+360)%360+'°';
+ $('earthAz').textContent=(p.earthAz+Math.round((hour-12)*1.1)+360)%360+'°';
+ $('illum').textContent=illum+'%';$('comm').textContent=comm+'%';
+ $('sunPct').textContent=illum+'%';$('earthPct').textContent=comm+'%';$('terrainPct').textContent=p.terrain+'%';
+ $('sunBar').style.width=illum+'%';$('earthBar').style.width=comm+'%';$('terrainBar').style.width=p.terrain+'%';
+ $('los').textContent=los?'Check terrain*':'Potentially blocked*';
+ $('los').style.color=los?'var(--green)':'var(--red)';
+ $('hourLabel').textContent=String(hour).padStart(2,'0')+':00';
+ $('timeInsight').textContent=hour<6?'Illustrative pre-dawn conditions; verify local terrain shadows.':hour<11?'Illustrative morning conditions; solar geometry is changing.':hour<15?'Illustrative conditions around local noon.':hour<19?'Illustrative afternoon conditions; check horizon obstruction.':'Illustrative low-sun conditions; assess power and shadow periods.';
+ const sx=45+((hour*5+Number(p.sunAz))%35), ex=18+((hour*3+Number(p.earthAz))%35);
+ $('sunDot').style.left=sx+'%';$('sunDot').style.top=(39-Math.max(-4,sunElev)*1.5)+'%';
+ $('earthDot').style.left=ex+'%';$('earthDot').style.top=(34-Math.max(-2,earthElev)*1.1)+'%';
+ $('visualCaption').textContent=key==='shackleton'?'Shackleton rim region · '+date:key==='degerlache'?'de Gerlache region · '+date:'Haworth rim region · '+date;
+}
+function compare(){
+ $('comparisonPanel').scrollIntoView({behavior:'smooth',block:'center'});
+ const current=$('site').value;
+ const names={shackleton:'Shackleton rim',degerlache:'de Gerlache region',haworth:'Haworth rim region'};
+ $('compareRows').innerHTML=Object.keys(profiles).map(k=>`<tr><td class="${k===current?'selected':''}">${names[k]} ${k===current?'← selected':''}</td><td>${profiles[k].sun}%</td><td>${profiles[k].earth}%</td><td>Requires DEM analysis</td></tr>`).join('');
+}
+$('update').addEventListener('click',update);$('compare').addEventListener('click',compare);
+$('hour').addEventListener('input',update);$('site').addEventListener('change',update);$('date').addEventListener('change',update);$('panelAngle').addEventListener('change',update);
+update();
+</script>
+</body>
+</html>
